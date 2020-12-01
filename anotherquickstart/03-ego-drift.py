@@ -1,10 +1,10 @@
 import lgsvl
-from lgsvl import ObjectState
+from lgsvl import ObjectState, AgentType
 from anotherquickstart import DEFAULT_EGO
-from anotherquickstart.utilities.scene_util import load_scene, spawn_ego_in_spawn_point, print_current_time_frame
+from anotherquickstart.utilities.scene_util import load_scene, spawn_agent, print_current_time_frame
 
 sim, spawns = load_scene()
-agent, forward, backward = spawn_ego_in_spawn_point(sim, DEFAULT_EGO, spawns[0], 5)
+agent, forward, backward = spawn_agent(sim, DEFAULT_EGO, AgentType.EGO, spawns[0], init_forward_distance=5)
 
 print_current_time_frame(sim)
 input("Press Enter to start driving")

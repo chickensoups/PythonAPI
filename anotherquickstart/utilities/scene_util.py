@@ -19,14 +19,16 @@ def load_scene():
     return sim, spawns
 
 
-def spawn_ego_in_spawn_point(sim, agent_name, spawn_point, init_forward_distance=0, init_velocity=0):
-    state = lgsvl.AgentState()
-    state.transform = spawn_point
+def spawn_agent(sim, agent_name, agent_type, spawn_point, state=None,
+                init_forward_distance=0, init_velocity=0):
     forward = lgsvl.utils.transform_to_forward(spawn_point)
     backward = lgsvl.utils.transform_to_backward(spawn_point)
-    state.transform.position += init_forward_distance * forward
-    state.velocity = init_velocity * forward
-    agent = sim.add_agent(agent_name, lgsvl.AgentType.EGO, state)
+    if state is None:
+        state = lgsvl.AgentState()
+        state.transform = spawn_point
+        state.transform.position += init_forward_distance * forward
+        state.velocity = init_velocity * forward
+    agent = sim.add_agent(agent_name, agent_type, state)
     return agent, forward, backward
 
 

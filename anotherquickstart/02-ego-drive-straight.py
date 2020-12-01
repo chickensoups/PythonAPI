@@ -1,11 +1,12 @@
 import lgsvl
-from lgsvl import ObjectState
+from lgsvl import ObjectState, AgentType
 
 from anotherquickstart import DEFAULT_EGO
-from anotherquickstart.utilities.scene_util import load_scene, print_current_time_frame, spawn_ego_in_spawn_point
+from anotherquickstart.utilities.scene_util import load_scene, print_current_time_frame, spawn_agent
 
 sim, spawns = load_scene()
-agent, forward, backward = spawn_ego_in_spawn_point(sim, DEFAULT_EGO, spawns[0], 5, 20)
+agent, forward, backward = spawn_agent(sim, DEFAULT_EGO, AgentType.EGO, spawns[0],
+                                       init_forward_distance=5, init_velocity=20)
 
 print("Vehicle bounding box =", agent.bounding_box)
 print_current_time_frame(sim)
