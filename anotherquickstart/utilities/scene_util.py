@@ -5,14 +5,17 @@ from anotherquickstart import SIMULATOR_HOST_KEY, DEFAULT_SIMULATOR_HOST, DEFAUL
 from anotherquickstart.utilities.print_util import print_an_array
 
 
-def load_scene():
+def load_scene(seed=None):
     sim = lgsvl.Simulator(os.environ.get(SIMULATOR_HOST_KEY, DEFAULT_SIMULATOR_HOST), DEFAULT_SIMULATION_PORT)
     print("Current Scene = {}".format(sim.current_scene))
     # Loads the named map in the connected simulator. The available maps can be set up in web interface
-    if sim.current_scene == DEFAULT_MAP:
-        sim.reset()
+    if seed is not None:
+        sim.load(DEFAULT_MAP, seed)
     else:
-        sim.load(DEFAULT_MAP)
+        if sim.current_scene == DEFAULT_MAP:
+            sim.reset()
+        else:
+            sim.load(DEFAULT_MAP)
     print("Current Scene = {}".format(sim.current_scene))
     spawns = sim.get_spawn()
     print_an_array(spawns)
