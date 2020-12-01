@@ -9,8 +9,13 @@ setup(
     author_email="contact@lgsvlsimulator.com",
     python_requires=">=3.5.0",
     url="https://github.com/lgsvl/simulator",
-    packages=["lgsvl"],
-    install_requires=["websockets==7.0"],
+    packages=["lgsvl", "lgsvl.dreamview", "lgsvl.evaluator"],
+    install_requires=[
+        "websockets==7.0",
+        "websocket-client==0.57.0",
+        "numpy",
+        "environs"
+    ],
     license="Other",
     classifiers=[
         "License :: Other/Proprietary License",

@@ -1,31 +1,31 @@
 #
-# Copyright (c) 2019 LG Electronics, Inc.
+# Copyright (c) 2019-2020 LG Electronics, Inc.
 #
 # This software contains code licensed as described in LICENSE.
 #
 
 import unittest
 import math
-import time
 
 import lgsvl
 from .common import SimConnection, cmEqual, mEqual, spawnState
 
+
 class TestPeds(unittest.TestCase):
-    def test_ped_creation(self): # Check if the different types of Peds can be created
+    def test_ped_creation(self):  # Check if the different types of Peds can be created
         with SimConnection() as sim:
             state = spawnState(sim)
             forward = lgsvl.utils.transform_to_forward(state.transform)
             state.transform.position = state.position - 4 * forward
             sim.add_agent("Jaguar2015XE (Apollo 3.0)", lgsvl.AgentType.EGO, state)
             for name in ["Bob", "EntrepreneurFemale", "Howard", "Johny", \
-                "Pamela", "Presley", "Red", "Robin", "Stephen", "Zoe"]:
+                "Pamela", "Presley", "Robin", "Stephen", "Zoe"]:
                 agent = self.create_ped(sim, name, spawnState(sim))
                 cmEqual(self, agent.state.position, sim.get_spawn()[0].position, name)
                 self.assertEqual(agent.name, name)
-    
-    def test_ped_random_walk(self): # Check if pedestrians can walk randomly
-        with SimConnection() as sim:
+
+    def test_ped_random_walk(self):  # Check if pedestrians can walk randomly
+        with SimConnection(40) as sim:
             state = spawnState(sim)
             forward = lgsvl.utils.transform_to_forward(state.transform)
             state.transform.position = state.position - 4 * forward
@@ -47,7 +47,7 @@ class TestPeds(unittest.TestCase):
 
             cmEqual(self, randPoint, bob.state.transform.position, "Ped random walk")
 
-    def test_ped_circle_waypoints(self): # Check if pedestrians can follow waypoints
+    def test_ped_circle_waypoints(self):  # Check if pedestrians can follow waypoints
         with SimConnection(60) as sim:
             state = spawnState(sim)
             forward = lgsvl.utils.transform_to_forward(state.transform)
@@ -71,6 +71,7 @@ class TestPeds(unittest.TestCase):
 
             state.transform.position = waypoints[0]
             zoe = self.create_ped(sim, "Zoe", state)
+
             def on_waypoint(agent,index):
                 msg = "Waypoint " + str(index)
                 mEqual(self, zoe.state.position, waypoints[index], msg)
@@ -123,5 +124,5 @@ class TestPeds(unittest.TestCase):
 
             self.assertAlmostEqual(idleTime-noIdleTime, 2.0, delta=0.5)
 
-    def create_ped(self, sim, name, state): # create the specified Pedestrian
+    def create_ped(self, sim, name, state):  # create the specified Pedestrian
         return sim.add_agent(name, lgsvl.AgentType.PEDESTRIAN, state)

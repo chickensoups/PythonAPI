@@ -1,21 +1,20 @@
 #!/usr/bin/env python3
 #
-# Copyright (c) 2019 LG Electronics, Inc.
+# Copyright (c) 2019-2020 LG Electronics, Inc.
 #
 # This software contains code licensed as described in LICENSE.
 #
 
-import os
+from environs import Env
 import lgsvl
 
-sim = lgsvl.Simulator(os.environ.get("SIMULATOR_HOST", "127.0.0.1"), 8181)
+env = Env()
 
-scene_name = "BorregasAve"
-
-if sim.current_scene == scene_name:
-  sim.reset()
+sim = lgsvl.Simulator(env.str("LGSVL__SIMULATOR_HOST", "127.0.0.1"), env.int("LGSVL__SIMULATOR_PORT", 8181))
+if sim.current_scene == "BorregasAve":
+    sim.reset()
 else:
-  sim.load(scene_name, 42)
+    sim.load("BorregasAve", 42)
 
 spawns = sim.get_spawn()
 
@@ -23,15 +22,15 @@ state = lgsvl.AgentState()
 forward = lgsvl.utils.transform_to_forward(spawns[0])
 state.transform = spawns[0]
 state.transform.position = spawns[0].position + 20 * forward
-ego = sim.add_agent("Lincoln2017MKZ (Apollo 5.0)", lgsvl.AgentType.EGO, state)
+sim.add_agent(env.str("LGSVL__VEHICLE_0", "Lincoln2017MKZ (Apollo 5.0)"), lgsvl.AgentType.EGO, state)
 
 print("Python API Quickstart #27: How to Control Traffic Light")
 
 # # Get a list of controllable objects
 controllables = sim.get_controllables("signal")
-print("\n# List of controllable objects in {} scene:".format(scene_name))
+print("\n# List of controllable objects in {} scene:".format("BorregasAve"))
 for c in controllables:
-  print(c)
+    print(c)
 
 signal = sim.get_controllable(lgsvl.Vector(15.5, 4.7, -23.9), "signal")
 print("\n# Signal of interest:")

@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2019 LG Electronics, Inc.
+# Copyright (c) 2019-2020 LG Electronics, Inc.
 #
 # This software contains code licensed as described in LICENSE.
 #
@@ -7,24 +7,25 @@
 import unittest
 import time
 import lgsvl
-from .common import SimConnection, spawnState, cmEqual, mEqual, TestTimeout, TestException
+from .common import SimConnection, spawnState, cmEqual, mEqual, TestException
 
 PROBLEM = "Object reference not set to an instance of an object"
 
 # TODO Add tests for callbacks for when NPC changes lanes, reaches stop line
 
+
 class TestNPC(unittest.TestCase):
 
-# THIS TEST RUNS FIRST
+    # THIS TEST RUNS FIRST
     def test_AAA_NPC_no_scene(self):
         with SimConnection(load_scene=False) as sim:
             with self.assertRaises(Exception) as e:
                 state = lgsvl.AgentState()
                 agent = sim.add_agent("Jeep", lgsvl.AgentType.NPC, state)
                 agent.state.position
-            self.assertFalse(repr(e.exception).startswith(PROBLEM))
+                self.assertFalse(repr(e.exception).startswith(PROBLEM))
 
-    def test_NPC_creation(self): # Check if the different types of NPCs can be created
+    def test_NPC_creation(self):  # Check if the different types of NPCs can be created
         with SimConnection(60) as sim:
             state = spawnState(sim)
             right = lgsvl.utils.transform_to_right(state.transform)
@@ -57,7 +58,7 @@ class TestNPC(unittest.TestCase):
                 with self.subTest(a):
                     self.assertEqual(agentCounter[a], 1)
 
-    def test_NPC_follow_lane(self): #Check if NPC can follow lane
+    def test_NPC_follow_lane(self):  # Check if NPC can follow lane
         with SimConnection() as sim:
             state = spawnState(sim)
             right = lgsvl.utils.transform_to_right(state.transform)
@@ -68,44 +69,44 @@ class TestNPC(unittest.TestCase):
             sim.run(2.0)
             agentState = agent.state
             self.assertGreater(agentState.speed, 0)
-            # self.assertAlmostEqual(agent.state.speed, 5.6, delta=1)   
-            self.assertLess(agent.state.position.x - sim.get_spawn()[0].position.x, 5.6)
+            # self.assertAlmostEqual(agent.state.speed, 5.6, delta=1)
+            self.assertLess(agent.state.position.x - sim.get_spawn()[0].position.x, 5.6*2)
 
-    def test_rotate_NPC(self): # Check if NPC can be rotated
+    def test_rotate_NPC(self):  # Check if NPC can be rotated
         with SimConnection() as sim:
             state = spawnState(sim)
             right = lgsvl.utils.transform_to_right(state.transform)
             state.transform.position = state.position - 5 * right
             sim.add_agent("Jaguar2015XE (Apollo 3.0)", lgsvl.AgentType.EGO, state)
             agent = self.create_NPC(sim, "SUV")
-            self.assertAlmostEqual(agent.state.transform.rotation.y, 194.823394, places=3)
+            self.assertAlmostEqual(agent.state.transform.rotation.y, 104.823394, places=3)
             x = agent.state
-            x.transform.rotation.y = 100
+            x.transform.rotation.y = 10
             agent.state = x
-            self.assertAlmostEqual(agent.state.transform.rotation.y, 100, delta=0.1)
+            self.assertAlmostEqual(agent.state.transform.rotation.y, 10, delta=0.1)
 
-    def test_blank_agent(self): # Check that an exception is raised if a blank name is given
+    def test_blank_agent(self):  # Check that an exception is raised if a blank name is given
         with SimConnection() as sim:
             with self.assertRaises(Exception) as e:
                 self.create_NPC(sim, "")
             self.assertFalse(repr(e.exception).startswith(PROBLEM))
 
-    def test_int_agent(self): # Check that an exception is raised if an integer name is given
+    def test_int_agent(self):  # Check that an exception is raised if an integer name is given
         with SimConnection() as sim:
             with self.assertRaises(TypeError):
                     self.create_NPC(sim, 1)
 
-    def test_wrong_type_NPC(self): # Check that an exception is raised if 4 is given as the agent type
+    def test_wrong_type_NPC(self):  # Check that an exception is raised if 4 is given as the agent type
         with SimConnection() as sim:
             with self.assertRaises(TypeError):
                 sim.add_agent("SUV", 4, spawnState(sim))
-    
+
     def test_wrong_type_value(self):
         with SimConnection() as sim:
             with self.assertRaises(ValueError):
                 sim.add_agent("SUV", lgsvl.AgentType(9), spawnState(sim))
 
-    def test_upsidedown_NPC(self): # Check that an upside-down NPC keeps falling
+    def test_upsidedown_NPC(self):  # Check that an upside-down NPC keeps falling
         with SimConnection() as sim:
             state = spawnState(sim)
             right = lgsvl.utils.transform_to_right(state.transform)
@@ -119,7 +120,7 @@ class TestNPC(unittest.TestCase):
             final_height = agent.state.position.y
             self.assertLess(final_height, initial_height)
 
-    def test_flying_NPC(self): # Check if an NPC created above the map falls
+    def test_flying_NPC(self):  # Check if an NPC created above the map falls
         with SimConnection() as sim:
             state = spawnState(sim)
             forward = lgsvl.utils.transform_to_forward(state.transform)
@@ -134,7 +135,7 @@ class TestNPC(unittest.TestCase):
             final_height = agent.state.position.y
             self.assertLess(final_height, initial_height)
 
-    def test_underground_NPC(self): # Check if an NPC created below the map keeps falling
+    def test_underground_NPC(self):  # Check if an NPC created below the map keeps falling
         with SimConnection() as sim:
             state = spawnState(sim)
             up = lgsvl.utils.transform_to_up(state.transform)
@@ -145,7 +146,7 @@ class TestNPC(unittest.TestCase):
             final_height = agent.state.position.y
             self.assertLess(final_height, initial_height)
 
-    def test_access_removed_NPC(self): # Check that and exception is raised when trying to access position of a removed NPC
+    def test_access_removed_NPC(self):  # Check that and exception is raised when trying to access position of a removed NPC
         with SimConnection() as sim:
             state = spawnState(sim)
             agent = sim.add_agent("Hatchback", lgsvl.AgentType.NPC, state)
@@ -155,7 +156,7 @@ class TestNPC(unittest.TestCase):
                 agent.state.position
             self.assertFalse(repr(e.exception).startswith(PROBLEM))
 
-    def test_follow_waypoints(self): # Check that the NPC can follow waypoints
+    def test_follow_waypoints(self):  # Check that the NPC can follow waypoints
         with SimConnection(60) as sim:
             state = spawnState(sim)
             forward = lgsvl.utils.transform_to_forward(state.transform)
@@ -164,7 +165,7 @@ class TestNPC(unittest.TestCase):
             sim.add_agent("Jaguar2015XE (Apollo 3.0)", lgsvl.AgentType.EGO, state)
             spawns = sim.get_spawn()
             agent = self.create_NPC(sim, "Sedan")
-            
+
             # snake-drive
             layer_mask = 0
             layer_mask |= 1 << 0
@@ -194,7 +195,7 @@ class TestNPC(unittest.TestCase):
 
             sim.run()
 
-    def test_high_waypoint(self): # Check that a NPC will drive to under a high waypoint
+    def test_high_waypoint(self):  # Check that a NPC will drive to under a high waypoint
         with SimConnection(15) as sim:
             state = spawnState(sim)
             forward = lgsvl.utils.transform_to_forward(state.transform)
@@ -221,7 +222,7 @@ class TestNPC(unittest.TestCase):
 
             self.assertLess((agent.state.position - destination).magnitude(), 1)
 
-    def test_npc_different_directions(self): # Check that specified velocities match the NPC's movement
+    def test_npc_different_directions(self):  # Check that specified velocities match the NPC's movement
         with SimConnection() as sim:
             state = spawnState(sim)
             forward = lgsvl.utils.transform_to_forward(state.transform)
@@ -251,7 +252,7 @@ class TestNPC(unittest.TestCase):
             target = state.position + 4 * forward
             self.assertLess((npc.state.position - target).magnitude(), 1)
 
-    def test_stopline_callback(self): # Check that the stopline call back works properly
+    def test_stopline_callback(self):  # Check that the stopline call back works properly
         with self.assertRaises(TestException) as e:
             with SimConnection(60) as sim:
                 state = spawnState(sim)
@@ -270,7 +271,7 @@ class TestNPC(unittest.TestCase):
                 sim.run(60)
         self.assertIn("Waypoint reached", repr(e.exception))
 
-    def test_remove_npc_with_callback(self): # Check that an NPC with callbacks is removed properly
+    def test_remove_npc_with_callback(self):  # Check that an NPC with callbacks is removed properly
         with SimConnection() as sim:
             npc = sim.add_agent("Sedan", lgsvl.AgentType.NPC, spawnState(sim))
 
@@ -287,7 +288,7 @@ class TestNPC(unittest.TestCase):
             with self.assertRaises(KeyError):
                 sim.callbacks[npc]
 
-    def test_spawn_speed(self): # Checks that a spawned agent keeps the correct speed when spawned
+    def test_spawn_speed(self):  # Checks that a spawned agent keeps the correct speed when spawned
         with SimConnection() as sim:
             sim.add_agent("Jaguar2015XE (Apollo 3.0)", lgsvl.AgentType.EGO, spawnState(sim, 1))
             npc = sim.add_agent("Sedan", lgsvl.AgentType.NPC, spawnState(sim))
@@ -299,10 +300,10 @@ class TestNPC(unittest.TestCase):
     def test_lane_change_right(self):
         with SimConnection(40) as sim:
             state = lgsvl.AgentState()
-            state.transform = sim.map_point_on_lane(lgsvl.Vector(40.85, -1.57, -4.49))
+            state.transform = sim.map_point_on_lane(lgsvl.Vector(4.49, -1.57, 40.85))
             npc = sim.add_agent("SUV", lgsvl.AgentType.NPC, state)
 
-            state.transform = sim.map_point_on_lane(lgsvl.Vector(42.73, -1.57, -0.63))
+            state.transform = sim.map_point_on_lane(lgsvl.Vector(0.63, -1.57, 42.73))
             sim.add_agent("Jaguar2015XE (Apollo 3.0)", lgsvl.AgentType.EGO, state)
             forward = lgsvl.utils.transform_to_forward(state.transform)
             target = state.position + 31 * forward
@@ -310,9 +311,10 @@ class TestNPC(unittest.TestCase):
             npc.follow_closest_lane(True, 10)
 
             agents = []
+
             def on_lane_change(agent):
                 agents.append(agent)
-            
+
             npc.on_lane_change(on_lane_change)
             sim.run(2)
             npc.change_lane(False)
@@ -324,20 +326,21 @@ class TestNPC(unittest.TestCase):
     def test_lane_change_right_missing_lane(self):
         with SimConnection(40) as sim:
             state = lgsvl.AgentState()
-            state.transform = sim.map_point_on_lane(lgsvl.Vector(42.73, -1.57, -0.63))
+            state.transform = sim.map_point_on_lane(lgsvl.Vector(0.63, -1.57, 42.73))
             npc = sim.add_agent("Hatchback", lgsvl.AgentType.NPC, state)
             forward = lgsvl.utils.transform_to_forward(state.transform)
             target = state.position + 42.75 * forward
 
-            state.transform = sim.map_point_on_lane(lgsvl.Vector(40.85, -1.57, -4.49))
+            state.transform = sim.map_point_on_lane(lgsvl.Vector(4.49, -1.57, 40.85))
             sim.add_agent("Jaguar2015XE (Apollo 3.0)", lgsvl.AgentType.EGO, state)
 
             npc.follow_closest_lane(True, 10)
 
             agents = []
+
             def on_lane_change(agent):
                 agents.append(agent)
-            
+
             npc.on_lane_change(on_lane_change)
             sim.run(2)
             npc.change_lane(False)
@@ -349,10 +352,10 @@ class TestNPC(unittest.TestCase):
     def test_lane_change_left(self):
         with SimConnection(40) as sim:
             state = lgsvl.AgentState()
-            state.transform = sim.map_point_on_lane(lgsvl.Vector(40.85, -1.57, -4.49))
+            state.transform = sim.map_point_on_lane(lgsvl.Vector(4.49, -1.57, 40.85))
             npc = sim.add_agent("SUV", lgsvl.AgentType.NPC, state)
 
-            state.transform = sim.map_point_on_lane(lgsvl.Vector(42.02, -1.79, -9.82))
+            state.transform = sim.map_point_on_lane(lgsvl.Vector(9.82, -1.79, 42.02))
             sim.add_agent("Jaguar2015XE (Apollo 3.0)", lgsvl.AgentType.EGO, state)
             forward = lgsvl.utils.transform_to_forward(state.transform)
             target = state.position + 31 * forward
@@ -360,9 +363,10 @@ class TestNPC(unittest.TestCase):
             npc.follow_closest_lane(True, 10)
 
             agents = []
+
             def on_lane_change(agent):
                 agents.append(agent)
-            
+
             npc.on_lane_change(on_lane_change)
             sim.run(2)
             npc.change_lane(True)
@@ -374,7 +378,7 @@ class TestNPC(unittest.TestCase):
     def test_lane_change_left_opposing_traffic(self):
         with SimConnection(40) as sim:
             state = lgsvl.AgentState()
-            state.transform = sim.map_point_on_lane(lgsvl.Vector(-40.292, -3.363, -78.962))
+            state.transform = sim.map_point_on_lane(lgsvl.Vector(78.962, -3.363, -40.292))
             npc = sim.add_agent("SUV", lgsvl.AgentType.NPC, state)
             forward = lgsvl.utils.transform_to_forward(state.transform)
             target = state.position + 42.75 * forward
@@ -385,9 +389,10 @@ class TestNPC(unittest.TestCase):
             npc.follow_closest_lane(True, 10)
 
             agents = []
+
             def on_lane_change(agent):
                 agents.append(agent)
-            
+
             npc.on_lane_change(on_lane_change)
             sim.run(2)
             npc.change_lane(True)
@@ -400,18 +405,19 @@ class TestNPC(unittest.TestCase):
     def test_multiple_lane_changes(self):
         with SimConnection(120) as sim:
             state = lgsvl.AgentState()
-            state.transform.position = lgsvl.Vector(239,10,180)
-            state.transform.rotation = lgsvl.Vector(0,180,0)
+            state.transform.position = lgsvl.Vector(-180,10,239)
+            state.transform.rotation = lgsvl.Vector(0,90,0)
             sim.add_agent("XE_Rigged-apollo", lgsvl.AgentType.EGO, state)
 
             state = lgsvl.AgentState()
-            state.transform.position = lgsvl.Vector(234.5, 10, 175)
-            state.transform.rotation = lgsvl.Vector(0.016, 180, 0)
+            state.transform.position = lgsvl.Vector(-175, 10, 234.5)
+            state.transform.rotation = lgsvl.Vector(0, 90, 0.016)
             npc = sim.add_agent("Sedan", lgsvl.AgentType.NPC, state)
 
             npc.follow_closest_lane(True, 10)
 
             agents = []
+
             def on_lane_change(agent):
                 agents.append(agent)
 
@@ -441,7 +447,7 @@ class TestNPC(unittest.TestCase):
             control = lgsvl.NPCControl()
             control.headlights = 2
             npc.apply_control(control)
-            
+
             with self.assertRaises(ValueError):
                 control.headlights = 15
                 npc.apply_control(control)
@@ -455,9 +461,9 @@ class TestNPC(unittest.TestCase):
                 npc.apply_control(control)
 
     def test_e_stop(self):
-        with SimConnection() as sim:
+        with SimConnection(60) as sim:
             state = lgsvl.AgentState()
-            state.transform = sim.map_point_on_lane(lgsvl.Vector(-40.292, -3.363, -78.962))
+            state.transform = sim.map_point_on_lane(lgsvl.Vector(78.962, -3.363, -40.292))
             sim.add_agent("Jaguar2015XE (Apollo 3.0)", lgsvl.AgentType.EGO, state)
             forward = lgsvl.utils.transform_to_forward(state.transform)
             state.transform.position = state.position + 10 * forward
@@ -478,7 +484,7 @@ class TestNPC(unittest.TestCase):
     def test_waypoint_speed(self):
         with SimConnection(60) as sim:
             state = lgsvl.AgentState()
-            state.transform = sim.map_point_on_lane(lgsvl.Vector(-40.292, -3.363, -78.962))
+            state.transform = sim.map_point_on_lane(lgsvl.Vector(78.962, -3.363, -40.292))
             sim.add_agent("Jaguar2015XE (Apollo 3.0)", lgsvl.AgentType.EGO, state)
             forward = lgsvl.utils.transform_to_forward(state.transform)
             up = lgsvl.utils.transform_to_up(state.transform)
@@ -535,5 +541,5 @@ class TestNPC(unittest.TestCase):
     #         sim.run(2)
     #         self.assertAlmostEqual(npc.state.speed, 8, delta=1)
 
-    def create_NPC(self, sim, name): # Create the specified NPC
+    def create_NPC(self, sim, name):  # Create the specified NPC
         return sim.add_agent(name, lgsvl.AgentType.NPC, spawnState(sim))
