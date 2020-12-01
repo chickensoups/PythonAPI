@@ -1,7 +1,7 @@
 import os
 
 import lgsvl
-from anotherquickstart import SIMULATOR_HOST_KEY, DEFAULT_SIMULATOR_HOST, DEFAULT_SIMULATION_PORT, DEFAULT_MAP, DEFAULT_EGO
+from anotherquickstart import SIMULATOR_HOST_KEY, DEFAULT_SIMULATOR_HOST, DEFAULT_SIMULATION_PORT, DEFAULT_MAP
 from anotherquickstart.utilities.print_util import print_an_array
 
 
@@ -19,12 +19,13 @@ def load_scene():
     return sim, spawns
 
 
-def spawn_ego_in_spawn_point(sim, agent_name, spawn_point, forward_distance=0):
+def spawn_ego_in_spawn_point(sim, agent_name, spawn_point, init_forward_distance=0, init_velocity=0):
     state = lgsvl.AgentState()
     state.transform = spawn_point
     forward = lgsvl.utils.transform_to_forward(spawn_point)
-    backward= lgsvl.utils.transform_to_backward(spawn_point)
-    state.transform.position += forward_distance * forward
+    backward = lgsvl.utils.transform_to_backward(spawn_point)
+    state.transform.position += init_forward_distance * forward
+    state.velocity = init_velocity * forward
     agent = sim.add_agent(agent_name, lgsvl.AgentType.EGO, state)
     return agent, forward, backward
 

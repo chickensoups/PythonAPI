@@ -111,6 +111,16 @@ def transform_to_forward(tr):
     return Vector(cx * sy, -sx, cx * cy)
 
 
+def transform_to_backward(tr):
+    ax = tr.rotation.x * math.pi / 180.0
+    sx, cx = math.sin(ax), math.cos(ax)
+
+    ay = tr.rotation.y * math.pi / 180.0
+    sy, cy = math.sin(ay), math.cos(ay)
+
+    return Vector(-cx * sy, sx, -cx * cy)
+
+
 def transform_to_up(tr):
     ax = tr.rotation.x * math.pi / 180.0
     ay = tr.rotation.y * math.pi / 180.0
